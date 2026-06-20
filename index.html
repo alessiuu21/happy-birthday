@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday 🎉❤️</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111118;
+    font-family: sans-serif;
+    padding: 16px;
+  }
+
+  /* ---------- Tarjeta contenedora ---------- */
+  .card {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+    overflow: hidden;
+    transition: max-width 0.9s cubic-bezier(.65,0,.35,1);
+  }
+
+  .card.split {
+    max-width: 820px;
+  }
+
+  .stage {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  @media (max-width: 680px) {
+    .stage { flex-direction: column; }
+  }
+
+  /* ---------- Panel pastel ---------- */
+  .cake-panel {
+    position: relative;
+    flex: 1 1 100%;
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(12px, 3.5dvh, 20px);
+    padding: 24px 16px;
+    min-height: clamp(320px, 70dvh, 460px);
+    background: linear-gradient(160deg, #ffd9e0 0%, #ffb6c8 60%, #ff9eb5 100%);
+    transition: flex-basis 0.9s cubic-bezier(.65,0,.35,1);
+  }
+
+  .card.split .cake-panel { flex: 1 1 50%; }
+
+  /* ---------- Confeti y corazones cayendo ---------- */
+  .confetti {
+    position: absolute;
+    top: -10%;
+    border-radius: 50%;
+    opacity: 0.85;
+    animation: fall linear infinite;
+    pointer-events: none;
+  }
+  .confetti.square { border-radius: 2px; }
+
+  .falling-heart {
+    position: absolute;
+    top: -10vh;
+    width: var(--s, 14px);
+    height: calc(var(--s, 14px) * 0.88);
+    opacity: 0;
+    /* Nueva animación de caída fluida */
+    animation: fallHearts linear infinite;
+    pointer-events: none;
+  }
+  .falling-heart::before, .falling-heart::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 80%;
+    background: var(--c, #ff6f91);
+    border-radius: 50% 50% 0 0;
+  }
+  .falling-heart::before { left: 50%; transform-origin: 0 100%; transform: rotate(-45deg); }
+  .falling-heart::after  { left: 0;   transform-origin: 100% 100%; transform: rotate(45deg); }
+
+  /* Animación original para el confeti */
+  @keyframes fall {
+    0%   { transform: translateY(-10%) rotate(0deg); }
+    100% { transform: translateY(620%) rotate(360deg); }
+  }
+
+  /* Nueva animación dinámica para los corazones */
+  @keyframes fallHearts {
+    0%   { transform: translate(0px, 0vh) rotate(0deg) scale(0.8); opacity: 0; }
+    10%  { opacity: 0.9; }
+    25%  { transform: translate(25px, 25vh) rotate(45deg) scale(1.1); }
+    50%  { transform: translate(-25px, 50vh) rotate(90deg) scale(0.9); }
+    75%  { transform: translate(15px, 75vh) rotate(135deg) scale(1.2); }
+    90%  { opacity: 0.9; }
+    100% { transform: translate(-10px, 110vh) rotate(180deg) scale(0.8); opacity: 0; }
+  }
+
+  /* ---------- Pastel ---------- */
+  .scene {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(12px, 3.5dvh, 20px);
+    z-index: 2;
+    width: 100%;
+  }
+
+  .cake {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .candle {
+    position: relative;
+    width: 8px;
+    height: 0px;
+    background: linear-gradient(180deg, #ffffff 0 45%, #ff7eb3 45% 55%, #ffffff 55% 100%);
+    border-radius: 2px;
+    margin-bottom: -2px;
+    opacity: 0;
+    transition: height 0.6s ease, opacity 0.4s ease;
+  }
+  .candle.show { height: 46px; opacity: 1; }
+
+  .flame {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    width: 14px;
+    height: 20px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    background: radial-gradient(circle at 50% 70%, #fff6c8 0%, #ffd23f 35%, #ff7b00 75%, transparent 80%);
+    box-shadow: 0 0 18px 6px rgba(255, 170, 0, 0.65);
+    transform-origin: bottom center;
+    animation: flicker 1.4s ease-in-out infinite;
+    opacity: 0;
+  }
+  .flame.show {
+    opacity: 1;
+    animation: flicker 1.4s ease-in-out infinite, ignite 0.4s ease forwards;
+  }
+
+  @keyframes ignite {
+    0%   { transform: translateX(-50%) scale(0); }
+    100% { transform: translateX(-50%) scale(1); }
+  }
+  @keyframes flicker {
+    0%, 100% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+    50%      { transform: translateX(-50%) scale(1.08) rotate(2deg); }
+  }
+
+  /* ---------- Glaseado con goteo ---------- */
+  .icing-wrap {
+    position: relative;
+    z-index: 3;
+  }
+
+  .icing {
+    position: relative;
+    width: clamp(95px, 28vw, 130px);
+    height: 0px;
+    background: #fff;
+    border-radius: 14px 14px 6px 6px;
+    box-shadow: inset 0 -6px 0 rgba(0,0,0,0.03);
+    opacity: 0;
+    transition: height 0.5s ease, opacity 0.4s ease;
+  }
+  .icing.show { height: clamp(16px, 5vw, 22px); opacity: 1; }
+
+  .icing::before, .icing::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    width: 14px;
+    height: 16px;
+    background: #fff;
+    border-radius: 0 0 10px 10px;
+  }
+  .icing::before { left: 14px; }
+  .icing::after  { right: 14px; }
+
+  .drip {
+    position: absolute;
+    top: 100%;
+    left: var(--x);
+    width: var(--w);
+    height: 0;
+    background: #fff;
+    border-radius: 0 0 50% 50%;
+    transition: height 0.7s ease var(--d, 0ms);
+  }
+  .icing.show .drip { height: var(--h); }
+
+  .layer {
+    width: clamp(105px, 32vw, 150px);
+    height: 0px;
+    background: linear-gradient(180deg, #8a5a3c 0%, #6e4429 100%);
+    border-top: 3px solid rgba(255,255,255,0.15);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: height 0.45s ease, opacity 0.45s ease, transform 0.45s ease;
+  }
+  .layer.show { height: clamp(26px, 7vw, 38px); opacity: 1; transform: translateY(0); }
+  .layer:first-of-type { border-radius: 6px 6px 0 0; }
+
+  .plate {
+    width: clamp(125px, 38vw, 180px);
+    height: 8px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .plate.show { opacity: 1; }
+
+  /* ---------- Texto cumpleaños ---------- */
+  .message {
+    font-family: 'Alex Brush', cursive;
+    font-size: clamp(1.6em, 8vw, 2.4em);
+    color: #c2185b;
+    text-shadow: 2px 2px 5px rgba(255,255,255,0.7);
+    text-align: center;
+    min-height: 1.3em;
+    padding: 0 8px;
+    z-index: 2;
+  }
+
+  .message span {
+    opacity: 0;
+    filter: blur(4px);
+    display: inline-block;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, filter 0.5s ease, transform 0.5s ease;
+  }
+  .message span.show { opacity: 1; filter: blur(0); transform: translateY(0); }
+
+  /* ---------- Botón corazón ---------- */
+  .heart-btn {
+    appearance: none;
+    border: none;
+    background: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.4);
+    pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(.34,1.56,.64,1);
+    z-index: 2;
+  }
+  .heart-btn.show { opacity: 1; transform: scale(1); pointer-events: auto; }
+
+  .heart {
+    position: relative;
+    width: 46px;
+    height: 42px;
+    margin: 4px 10px;
+    animation: beat 1.2s ease-in-out infinite;
+  }
+  .heart::before, .heart::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 24px;
+    height: 38px;
+    border-radius: 24px 24px 0 0;
+    background: linear-gradient(135deg, #ff8aa6, #c2185b);
+    box-shadow: 0 6px 16px rgba(194, 24, 91, 0.55);
+  }
+  .heart::before { left: 23px; transform: rotate(-45deg); transform-origin: 0 100%; }
+  .heart::after  { left: 0;  transform: rotate(45deg);  transform-origin: 100% 100%; }
+  .heart-btn:active .heart { animation-play-state: paused; transform: scale(0.92); }
+
+  @keyframes beat {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.12); }
+  }
+
+  .hint {
+    font-size: 0.8em;
+    color: #8a3b57;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 2;
+    letter-spacing: 0.02em;
+  }
+  .hint.show { opacity: 0.85; }
+  .hint.fade-out { opacity: 0; }
+
+  @media (max-width: 380px) {
+    .heart { width: 40px; height: 36px; margin: 2px 8px; }
+    .heart::before, .heart::after { width: 21px; height: 33px; }
+    .heart::before { left: 20px; }
+  }
+
+  /* ---------- Panel carta ---------- */
+  .letter-panel {
+    flex: 0 0 0%;
+    min-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(180deg, #ffe1e8 0%, #ffeef2 100%);
+    transition: flex-basis 0.9s cubic-bezier(.65,0,.35,1), opacity 0.6s ease 0.15s;
+  }
+
+  .card.split .letter-panel {
+    flex: 1 1 50%;
+    opacity: 1;
+  }
+
+  .hearts-deco {
+    position: relative;
+    width: 100%;
+    height: clamp(100px, 20dvh, 150px);
+    flex-shrink: 0;
+  }
+
+  .deco-heart {
+    position: absolute;
+    width: var(--s, 24px);
+    height: calc(var(--s, 24px) * 0.88);
+    opacity: 0;
+    transform: scale(0.4) translateY(-6px);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .deco-heart.show { opacity: 1; transform: scale(1) translateY(0); }
+  .deco-heart::before, .deco-heart::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 80%;
+    background: #e0293f;
+    border-radius: 50% 50% 0 0;
+  }
+  .deco-heart::before { left: 50%; transform-origin: 0 100%; transform: rotate(-45deg); }
+  .deco-heart::after  { left: 0;   transform-origin: 100% 100%; transform: rotate(45deg); }
+
+  .letter-title {
+    font-family: 'Alex Brush', cursive;
+    font-size: clamp(2.2em, 9vw, 3em);
+    color: #1a1a1a;
+    text-align: center;
+    margin: 0 0 clamp(10px, 2.5dvh, 18px);
+    flex-shrink: 0;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+    white-space: nowrap;
+  }
+  .letter-title.show { opacity: 1; transform: translateY(0); }
+
+  .letter-box {
+    width: calc(100% - 32px);
+    margin: 0 16px 20px;
+    background: #fff5f7;
+    border-radius: 18px;
+    padding: 20px 18px;
+    flex: 1;
+    min-height: 0;
+    max-height: clamp(220px, 40dvh, 320px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s;
+  }
+  .letter-box.show { opacity: 1; transform: translateY(0); }
+
+  .letter-box::-webkit-scrollbar { width: 6px; }
+  .letter-box::-webkit-scrollbar-thumb { background: rgba(194,24,91,0.25); border-radius: 6px; }
+
+  .letter-greeting {
+    font-family: 'Lora', serif;
+    font-size: clamp(1.0em, 4vw, 1.15em);
+    color: #222;
+    margin: 0 0 14px;
+  }
+
+  .letter-body {
+    font-family: 'Lora', serif;
+    font-size: clamp(0.95em, 3.8vw, 1.08em);
+    line-height: 1.7;
+    color: #222;
+    margin: 0;
+    white-space: pre-line;
+  }
+</style>
+</head>
+<body>
+
+<div class="card" id="card">
+  <div class="stage" id="stage">
+
+    <div class="cake-panel" id="cakePanel">
+      <div class="scene">
+        <div class="cake" id="cake">
+          <div class="candle" id="candle">
+            <div class="flame" id="flame"></div>
+          </div>
+
+          <div class="icing-wrap">
+            <div class="icing" id="icing">
+              <span class="drip" style="--x:6%;  --w:11px; --h:30px; --d:0ms"></span>
+              <span class="drip" style="--x:20%; --w:15px; --h:52px; --d:70ms"></span>
+              <span class="drip" style="--x:36%; --w:10px; --h:26px; --d:150ms"></span>
+              <span class="drip" style="--x:50%; --w:14px; --h:60px; --d:40ms"></span>
+              <span class="drip" style="--x:66%; --w:11px; --h:40px; --d:180ms"></span>
+              <span class="drip" style="--x:82%; --w:13px; --h:48px; --d:100ms"></span>
+            </div>
+          </div>
+
+          <div class="layer" id="layer3"></div>
+          <div class="layer" id="layer2"></div>
+          <div class="layer" id="layer1"></div>
+          <div class="plate" id="plate"></div>
+        </div>
+        <div class="message" id="message"></div>
+        <button class="heart-btn" id="heartBtn" aria-label="Ir a la sorpresa">
+          <span class="heart"></span>
+        </button>
+        <div class="hint" id="hint">toca el corazón 💌</div>
+      </div>
+    </div>
+
+    <div class="letter-panel" id="letterPanel">
+      <div class="hearts-deco" id="heartsDeco"></div>
+      <h2 class="letter-title" id="letterTitle">My Love</h2>
+      <div class="letter-box" id="letterBox">
+        <p class="letter-greeting" id="letterGreeting">Querida Emily.</p>
+        <p class="letter-body" id="letterBody"></p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ====== Contenido editable ====== */
+  const recipientName = "Emily";
+  const letterMessage = "oiii mi amorrrrrr ,quisas te escribo esto de una manera muy poco repentina ,soy pesimo siendo fuerte delante tuyo porque cada parte de ti me derrite por completo jksjk, hoy 15/06/26 estoy terminando uno de los mejores y mas inmortales proyectos que hay ,una muestra de mi amor por ti y tu cumpleaños ,vivimos muchas cosas juntos y espero que siempre sea asi ,yoo quiero mil y un vidas contigo , te deseo muy feliz cumpleaños mi bb hermosa quisas me haya desviado mucho del tema pero quiero que sepas que ,tengo miedo de perderte y te doy esta y muchas pruebas mas de que mi amor por ti solo crece demasiado feliz cumpleaños , mi mori,mi rana , mi oveja , mi gorda , la madre de mis niños y dueña de mi corazon ,mucha suerte y felicidades en tu dia YAAA ERES VIEJAAAAAAAA TE AMOOOOOO MUCHO <3 y siempre sera asi eres todo lo que la vida me pudo haber dado la pijamadaaaa amorrr XD feliz cumpleaños amor quiero que lo sepas apesar de las cosas sin sentido que te digo , son pq trato de alegrarte o verte feliz pero te amo y feliz cumpleaños y te amo y hapi verdai y te amo musho muchisisimoooo ya estas en una mejor etapa donde yo se que vas a poder mejorar mucho mi bb hermosa te amo con toda el alma feliz 18 años mi niña .mi rana ,mi esposita bella <3333 "
+  document.getElementById('letterGreeting').textContent = `Querida ${recipientName}.`;
+  document.getElementById('letterBody').textContent = letterMessage;
+
+  /* ---------------- Confeti + corazones cayendo ---------------- */
+  const cakePanel = document.getElementById('cakePanel');
+  const confettiColors = ['#ff6f91', '#ffd23f', '#ffffff', '#ff9eb5', '#c2185b', '#ffe0e6'];
+  const heartColors = ['#ff6f91', '#e0293f', '#ff9eb5', '#c2185b'];
+
+  function spawnConfetti(count) {
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('div');
+      const isSquare = Math.random() > 0.5;
+      el.className = 'confetti' + (isSquare ? ' square' : '');
+      const size = 4 + Math.random() * 7;
+      el.style.width = size + 'px';
+      el.style.height = (isSquare ? size * 1.6 : size) + 'px';
+      el.style.left = Math.random() * 100 + '%';
+      el.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+      const duration = 4 + Math.random() * 5;
+      el.style.animationDuration = duration + 's';
+      el.style.animationDelay = (Math.random() * 5) + 's';
+      cakePanel.appendChild(el);
+    }
+  }
+
+  function spawnHearts(count) {
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('div');
+      el.className = 'falling-heart';
+      const size = 10 + Math.random() * 10;
+      el.style.setProperty('--s', size + 'px');
+      el.style.setProperty('--c', heartColors[Math.floor(Math.random() * heartColors.length)]);
+      el.style.left = Math.random() * 100 + '%';
+      const duration = 5 + Math.random() * 6;
+      el.style.animationDuration = duration + 's';
+      el.style.animationDelay = (Math.random() * 6) + 's';
+      cakePanel.appendChild(el);
+    }
+  }
+
+  spawnConfetti(50);
+  spawnHearts(25); // Si quieres más corazones, puedes aumentar este número.
+
+  /* ---------------- Secuencia del pastel ---------------- */
+  const steps = [
+    () => document.getElementById('plate').classList.add('show'),
+    () => document.getElementById('layer1').classList.add('show'),
+    () => document.getElementById('layer2').classList.add('show'),
+    () => document.getElementById('layer3').classList.add('show'),
+    () => document.getElementById('icing').classList.add('show'),
+    () => document.getElementById('candle').classList.add('show'),
+    () => document.getElementById('flame').classList.add('show'),
+  ];
+  steps.forEach((step, i) => setTimeout(step, 300 + i * 450));
+
+  /* ---------------- Texto: aparece palabra por palabra ---------------- */
+  const fullText = "Happy Birthday my Love!";
+  const message = document.getElementById('message');
+  const words = fullText.split(' ');
+
+  words.forEach((word, i) => {
+    const span = document.createElement('span');
+    span.textContent = word + (i < words.length - 1 ? '\u00A0' : '');
+    message.appendChild(span);
+  });
+
+  const wordSpans = message.querySelectorAll('span');
+  const textStart = 300 + steps.length * 450 + 300;
+  const wordGap = 260;
+
+  wordSpans.forEach((span, i) => {
+    setTimeout(() => span.classList.add('show'), textStart + i * wordGap);
+  });
+
+  /* ---------------- Botón corazón + pista ---------------- */
+  const heartBtn = document.getElementById('heartBtn');
+  const hint = document.getElementById('hint');
+  const heartShowTime = textStart + wordSpans.length * wordGap + 500;
+
+  setTimeout(() => {
+    heartBtn.classList.add('show');
+    hint.classList.add('show');
+  }, heartShowTime);
+
+  /* ---------------- Revelar la carta junto al pastel ---------------- */
+  const card = document.getElementById('card');
+  const heartsDeco = document.getElementById('heartsDeco');
+  const letterTitle = document.getElementById('letterTitle');
+  const letterBox = document.getElementById('letterBox');
+
+  // Posiciones/tamaños de los corazones decorativos (top%, left%, tamaño px, demora ms)
+  const heartLayout = [
+    [6, 4, 22, 0],   [4, 22, 30, 60],  [2, 42, 34, 120], [10, 60, 26, 40],
+    [3, 82, 30, 160], [26, 1, 18, 200], [22, 16, 36, 90], [30, 38, 24, 260],
+    [24, 56, 18, 180], [20, 76, 40, 130], [48, 10, 26, 300], [42, 30, 18, 340],
+    [46, 50, 22, 220], [44, 70, 18, 380], [50, 88, 24, 250]
+  ];
+
+  heartLayout.forEach(([top, left, size, delay]) => {
+    const h = document.createElement('div');
+    h.className = 'deco-heart';
+    h.style.top = top + '%';
+    h.style.left = left + '%';
+    h.style.setProperty('--s', size + 'px');
+    h.style.transitionDelay = delay + 'ms';
+    heartsDeco.appendChild(h);
+  });
+
+  let revealed = false;
+  function revealLetter() {
+    if (revealed) return;
+    revealed = true;
+
+    card.classList.add('split');
+    // Ya no ocultamos el hint porque el botón te lleva a otra página
+    // hint.classList.add('fade-out'); 
+
+    setTimeout(() => {
+      heartsDeco.querySelectorAll('.deco-heart').forEach(h => h.classList.add('show'));
+      letterTitle.classList.add('show');
+      letterBox.classList.add('show');
+    }, 250);
+  }
+
+  /* ---------------- REDIRECCIÓN DEL BOTÓN CORAZÓN ---------------- */
+  heartBtn.addEventListener('click', () => {
+    window.location.href = "https://alessiuu21.github.io/hapyy/";
+  });
+
+  // La carta aún se revela de manera automática para que luzca bonita
+  setTimeout(revealLetter, heartShowTime + 3200);
+</script>
+
+</body>
+</html>
